@@ -4,12 +4,8 @@ import { useEffect, useState } from "react";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
-import { Chat } from './chat';
 import { RoomChat } from '../HOC/roomChat.hoc';
 export const UserAuth = () => {
-    console.log(typeof db, db)
-
-
     const [user, setUser] = useState<any>()
     useEffect(() => {
         auth?.onAuthStateChanged((user: any) => {
@@ -21,8 +17,6 @@ export const UserAuth = () => {
         });
     }, []);
     console.log(user)
-
-    // sign in
     const signInWithGoogle = async () => {
         const provider = new firebase.auth.GoogleAuthProvider;
         auth.useDeviceLanguage();
@@ -33,8 +27,6 @@ export const UserAuth = () => {
             console.log(error);
         }
     };
-
-    // signout
     const signOut = async () => {
         try {
             await firebase.auth().signOut();

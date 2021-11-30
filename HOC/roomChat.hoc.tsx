@@ -1,31 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import type firebase from 'firebase';
-import { formatRelative } from 'date-fns'
 import * as firebaseApp from "firebase/app";
-import Image from 'next/image'
 import { Form } from '../components/form';
-
+import { message } from '../models/Chat'
 import { Chat } from '../components/chat'
 let tsDB: firebase.firestore.Firestore;
 interface Props {
     db: typeof tsDB,
     user: {
         photoURL?: string,
-        uid?: string,
+        uid: string,
         email?: string,
     }
 }
-interface message {
-    id: string;
-
-    title?: string
-    photoURL?: string,
-    uid?: string,
-    email?: string,
-    createdAt?: firebase.firestore.Timestamp,
-
-}
-
 export const RoomChat: React.FC<Props> = ({ db, user }) => {
     const [messages, setMessages] = useState<message[] | undefined>();
     const [newMessage, setNewMessage] = useState("");
@@ -55,23 +42,20 @@ export const RoomChat: React.FC<Props> = ({ db, user }) => {
         });
 
         setNewMessage("");
-
-        // scroll down the chat
     };
+
     const deleteMessage = (id: string | undefined) => {
-        var docRef = db.collection("messages").doc(id);
-
-        docRef.get().then((doc) => {
-            if (doc.exists) {
-                console.log("Document data:", doc.data());
-            } else {
-
-                console.log("No such document!");
-            }
-        }).catch((error) => {
-            console.log("Error getting document:", error);
-        });
+        db.collection("messages")
+            .doc(id)
+            .delete()
+            .then(() => {
+                console.log("Document successfully deleted!")
+            })
+            .catch((error) => {
+                console.error("Error removing document: ", error)
+            })
     }
+
 
     return (
         <div id="chat_room">
