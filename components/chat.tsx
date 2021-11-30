@@ -16,7 +16,7 @@ interface Props {
 interface message {
     id: string;
 
-    text?: string
+    title?: string
     photoURL?: string,
     uid?: string,
     email?: string,
