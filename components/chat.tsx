@@ -3,16 +3,17 @@ import type firebase from 'firebase';
 import { formatRelative } from 'date-fns'
 import * as firebaseApp from "firebase/app";
 import Image from 'next/image'
+import { Form } from './form';
 
-let tsDB: firebase.firestore.Firestore;
-interface Props {
-    db: typeof tsDB,
-    user: {
-        photoURL?: string,
-        uid?: string,
-        email?: string,
-    }
-}
+// let tsDB: firebase.firestore.Firestore;
+// interface Props {
+//     db: typeof tsDB,
+//     user: {
+//         photoURL?: string,
+//         uid?: string,
+//         email?: string,
+//     }
+// }
 interface message {
     id: string;
 
@@ -23,59 +24,66 @@ interface message {
     createdAt?: firebase.firestore.Timestamp,
 
 }
+interface Props {
+    messages?: message[],
+    user: {
+        photoURL?: string,
+        uid?: string,
+        email?: string,
+    },
+    deleteMessage: Function
 
-export const Chat: React.FC<Props> = ({ db, user }) => {
-    console.log(db)
-    const [messages, setMessages] = useState<message[] | undefined>();
-    const [newMessage, setNewMessage] = useState("");
-    const { uid, email, photoURL } = user;
-    console.log(messages)
-    console.log(typeof user)
+}
 
-    useEffect(() => {
-        db.collection("messages")
-            .orderBy("createdAt")
-            .limit(100)
-            .onSnapshot((querySnapShot) => {
-                const data = querySnapShot.docs.map((doc) => ({
-                    ...doc.data(),
-                    id: doc.id,
-                }));
+export const Chat: React.FC<Props> = ({ messages, user, deleteMessage }) => {
+    // const [messages, setMessages] = useState<message[] | undefined>();
+    // const [newMessage, setNewMessage] = useState("");
+    const { uid, photoURL } = user;
+    // useEffect(() => {
+    //     db.collection("messages")
+    //         .orderBy("createdAt")
+    //         .limit(100)
+    //         .onSnapshot((querySnapShot) => {
+    //             const data = querySnapShot.docs.map((doc) => ({
+    //                 ...doc.data(),
+    //                 id: doc.id,
+    //             }));
 
-                setMessages(data);
-            });
-    }, [db]);
-    const handleSubmit = (e: { preventDefault: () => void; }) => {
-        e.preventDefault();
+    //             setMessages(data);
+    //         });
+    // }, [db]);
 
-        db.collection("messages").add({
-            title: newMessage,
-            createdAt: firebaseApp.default.firestore.FieldValue.serverTimestamp(),
-            uid,
-            photoURL,
-        });
+    // const handleSubmit = (e: { preventDefault: () => void; }) => {
+    //     e.preventDefault();
 
-        setNewMessage("");
+    //     db.collection("messages").add({
+    //         title: newMessage,
+    //         createdAt: firebaseApp.default.firestore.FieldValue.serverTimestamp(),
+    //         uid,
+    //         photoURL,
+    //     });
 
-        // scroll down the chat
-    };
-    const deleteMessage = (id: string) => {
-        var docRef = db.collection("messages").doc(id);
+    //     setNewMessage("");
 
-        docRef.get().then((doc) => {
-            if (doc.exists) {
-                console.log("Document data:", doc.data());
-            } else {
+    //     // scroll down the chat
+    // };
+    // const deleteMessage = (id: string | undefined) => {
+    //     var docRef = db.collection("messages").doc(id);
 
-                console.log("No such document!");
-            }
-        }).catch((error) => {
-            console.log("Error getting document:", error);
-        });
-    }
+    //     docRef.get().then((doc) => {
+    //         if (doc.exists) {
+    //             console.log("Document data:", doc.data());
+    //         } else {
+
+    //             console.log("No such document!");
+    //         }
+    //     }).catch((error) => {
+    //         console.log("Error getting document:", error);
+    //     });
+    // }
 
     return (
-        <div id="chat_room">
+        <>
             {messages?.map((message) => (
                 <li key={message.id} className={message.uid === uid ? "sent" : "received"}>
                     <section>
@@ -89,7 +97,7 @@ export const Chat: React.FC<Props> = ({ db, user }) => {
                         ) : null}
                     </section>
                     <section key={message.id} className={message.uid === uid ? "message-blue" : "message-orange"}>
-                        {/* {message.uid && message.uid === uid && <button onClick={() => { deleteMessage(message.uid) }}>Delete</button>} */}
+                        {message.uid && message.uid === uid && <button className="btn" onClick={() => { deleteMessage(message.uid) }}>X</button>}
                         <p className="message-content">{message.title}</p>
 
                         {/* {message.email ? <span>{message.email}</span> : null} */}
@@ -105,19 +113,7 @@ export const Chat: React.FC<Props> = ({ db, user }) => {
                     </section>
                 </li>
             ))}
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type your message here..."
-                />
-
-                <button type="submit" disabled={!newMessage}>
-                    Send
-                </button>
-            </form>
-        </div>
+        </>
 
     )
 }

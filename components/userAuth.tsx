@@ -5,6 +5,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import { Chat } from './chat';
+import { RoomChat } from '../HOC/roomChat.hoc';
 export const UserAuth = () => {
     console.log(typeof db, db)
 
@@ -50,7 +51,7 @@ export const UserAuth = () => {
                         <nav id="sign_out">
                             <button onClick={signOut}>Sign Out</button>
                         </nav>
-                        <Chat user={user} db={db} />
+                        <RoomChat user={user} db={db} />
                     </>
                 ) : (
                     <section id="sign_in">
