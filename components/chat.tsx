@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import type firebase from 'firebase';
 import { formatRelative } from 'date-fns'
 import * as firebaseApp from "firebase/app";
+import Image from 'next/image'
+
 let tsDB: firebase.firestore.Firestore;
 interface Props {
     db: typeof tsDB,
@@ -57,28 +59,40 @@ export const Chat: React.FC<Props> = ({ db, user }) => {
 
         // scroll down the chat
     };
+    const deleteMessage = (id: string) => {
+        var docRef = db.collection("messages").doc(id);
+
+        docRef.get().then((doc) => {
+            if (doc.exists) {
+                console.log("Document data:", doc.data());
+            } else {
+
+                console.log("No such document!");
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+    }
     return (
         <div id="chat_room">
             {messages?.map((message) => (
                 <li key={message.id} className={message.uid === uid ? "sent" : "received"}>
                     <section>
                         {message.photoURL ? (
-                            <img
+                            <Image
                                 src={message.photoURL}
                                 alt="Avatar"
-                                width={45}
-                                height={45}
+                                width={70}
+                                height={70}
                             />
                         ) : null}
                     </section>
-                    <section>
-                        {/* display message text */}
-                        <p>{message.text}</p>
+                    <section key={message.id} className={message.uid === uid ? "message-blue" : "message-orange"}>
+                        {/* {message.uid && message.uid === uid && <button onClick={() => { deleteMessage(message.uid) }}>Delete</button>} */}
+                        <p className="message-content">{message.text}</p>
 
-                        {/* display user name */}
-                        {message.email ? <span>{message.email}</span> : null}
+                        {/* {message.email ? <span>{message.email}</span> : null} */}
                         <br />
-                        {/* display message date and time */}
                         {message.createdAt?.seconds ? (
                             <span>
                                 {formatRelative(
