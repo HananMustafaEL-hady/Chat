@@ -23,7 +23,7 @@ export const UserAuth = () => {
 
     // sign in
     const signInWithGoogle = async () => {
-        const provider = new firebase.auth.GithubAuthProvider();
+        const provider = new firebase.auth.GoogleAuthProvider;
         auth.useDeviceLanguage();
 
         try {
@@ -54,7 +54,7 @@ export const UserAuth = () => {
                     </>
                 ) : (
                     <section id="sign_in">
-                        <button onClick={signInWithGoogle}>Sign In With github</button>
+                        <button onClick={signInWithGoogle}>Sign In With Google</button>
                     </section>
                 )}
 

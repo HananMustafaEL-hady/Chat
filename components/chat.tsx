@@ -29,6 +29,7 @@ export const Chat: React.FC<Props> = ({ db, user }) => {
     const [messages, setMessages] = useState<message[] | undefined>();
     const [newMessage, setNewMessage] = useState("");
     const { uid, email, photoURL } = user;
+    console.log(messages)
     console.log(typeof user)
 
     useEffect(() => {
@@ -48,10 +49,9 @@ export const Chat: React.FC<Props> = ({ db, user }) => {
         e.preventDefault();
 
         db.collection("messages").add({
-            text: newMessage,
+            title: newMessage,
             createdAt: firebaseApp.default.firestore.FieldValue.serverTimestamp(),
             uid,
-            email,
             photoURL,
         });
 
@@ -73,6 +73,7 @@ export const Chat: React.FC<Props> = ({ db, user }) => {
             console.log("Error getting document:", error);
         });
     }
+
     return (
         <div id="chat_room">
             {messages?.map((message) => (
@@ -89,7 +90,7 @@ export const Chat: React.FC<Props> = ({ db, user }) => {
                     </section>
                     <section key={message.id} className={message.uid === uid ? "message-blue" : "message-orange"}>
                         {/* {message.uid && message.uid === uid && <button onClick={() => { deleteMessage(message.uid) }}>Delete</button>} */}
-                        <p className="message-content">{message.text}</p>
+                        <p className="message-content">{message.title}</p>
 
                         {/* {message.email ? <span>{message.email}</span> : null} */}
                         <br />
